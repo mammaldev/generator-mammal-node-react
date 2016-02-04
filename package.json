@@ -1,0 +1,33 @@
+{
+  "name": "generator-mammal-node-react",
+  "version": "0.1.0",
+  "description": "A Yeoman generator for scaffolding universal React apps",
+  "scripts": {
+    "clean": "rm -rf generators/",
+    "copy": "cp -r src/ generators/",
+    "compile": "npm run clean && npm run copy && babel -d generators/ --ignore src/ generators/",
+    "prepublish": "npm run compile",
+    "test": "mocha test/ -R spec --recursive --compilers js:babel-register"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "files": [
+    "generators/app"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "yeoman-generator": "^0.21.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.4.5",
+    "babel-eslint": "^4.1.8",
+    "babel-plugin-add-module-exports": "^0.1.2",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-register": "^6.4.3",
+    "mocha": "^2.4.5",
+    "yeoman-assert": "^2.1.1"
+  }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "handle": "gulp",
+    "spawn": {
+      "command": "./node_modules/gulp/bin/gulp.js",
+      "args": []
+    },
+    "stdinPrefix": "gulp"
+  },
+  {
+    "handle": "gulpWatch",
+    "spawn": {
+      "command": "./node_modules/gulp/bin/gulp.js",
+      "args": [
+        "watch"
+      ]
+    },
+    "stdinPrefix": "gulpWatch",
+    "waitOn": "gulp"
+  },
+  {
+    "handle": "nodemon",
+    "spawn": {
+      "command": "./node_modules/nodemon/bin/nodemon.js",
+      "args": [
+        "-e",
+        "js,jsx",
+        "-w",
+        "src/",
+        "--exec",
+        "npm",
+        "run",
+        "start"
+      ]
+    },
+    "stdinPrefix": "nd"
+  }
+]
