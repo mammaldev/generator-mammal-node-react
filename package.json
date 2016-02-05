@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rm -rf generators/",
     "copy": "cp -r src/ generators/",
-    "compile": "npm run clean && npm run copy && babel -d generators/ --ignore src/ generators/",
+    "compile": "npm run clean && npm run copy && babel -d generators/ --ignore templates/ generators/",
     "prepublish": "npm run compile",
     "test": "mocha test/ -R spec --recursive --compilers js:babel-register"
   },
