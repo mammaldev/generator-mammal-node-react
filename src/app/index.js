@@ -1,4 +1,5 @@
 import { generators } from 'yeoman-generator';
+import fs from 'fs';
 
 export default class MammalReact extends generators.Base {
 
@@ -73,6 +74,11 @@ export default class MammalReact extends generators.Base {
       [ '_readme.md', 'README.md' ],
     ];
 
+    // List of extra directories to create.
+    const directoriesToCreate = [
+      'resources',
+    ];
+
     // Write files. The "src/" directory is copied as-is. It can contain
     // dotfiles which are meant to end up in the scaffolded app so we need to
     // set the "dot" glob option or they are ignored.
@@ -88,6 +94,10 @@ export default class MammalReact extends generators.Base {
       this.fs.copyTpl(
         this.templatePath(source), this.destinationPath(dest), this.config
       );
+    }
+
+    for ( let name of directoriesToCreate ) {
+      fs.mkdirSync(name);
     }
   }
 
