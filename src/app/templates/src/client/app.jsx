@@ -1,32 +1,25 @@
 import React from 'react';
-import { render } from 'react-dom';
-import { Router } from 'react-router';
-import { Provider } from 'react-redux';
-import { applyMiddleware, compose, createStore } from 'redux';
-import { reduxReactRouter, ReduxRouter } from 'redux-router';
 import thunk from 'redux-thunk';
-import Immutable from 'immutable';
-import createHistory from 'history/lib/createBrowserHistory';
+import { render } from 'react-dom';
+import { Provider } from 'react-redux';
+import { Router, browserHistory } from 'react-router';
+import { syncHistoryWithStore } from 'react-router-redux';
+import { applyMiddleware, compose, createStore } from 'redux';
+import { fromJS as makeImmutable } from 'immutable';
 import reducer from '../universal/reducers';
 import routes from '../universal/routes';
 
-const state = window.__INITIAL_STATE__;
-
-Object.keys(state).forEach(( key ) => {
-  state[ key ] = Immutable.fromJS(state[ key ]);
+const state = makeImmutable(window.__INITIAL_STATE__);
+const store = createStore(reducer, state, applyMiddleware(thunk));
+const history = syncHistoryWithStore(browserHistory, store, {
+  selectLocationState: ( state ) => state.get('router'),
 });
-
-const store = compose(
-  applyMiddleware(thunk),
-  reduxReactRouter({
-    routes,
-    createHistory,
-  })
-)(createStore)(reducer, state);
 
 render(
   <Provider store={store}>
-    <ReduxRouter children={routes} />
+    <Router history={history}>
+      {routes}
+    </Router>
   </Provider>,
   document.getElementById('app')
 );

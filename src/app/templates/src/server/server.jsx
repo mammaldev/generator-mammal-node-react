@@ -1,13 +1,13 @@
 import path from 'path';
 import helmet from 'helmet';
 import express from 'express';
+import Immutable from 'immutable';
 import React from 'react';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import { ReduxRouter } from 'redux-router';
 import { renderToString } from 'react-dom/server';
-import createHistory from 'history/lib/createMemoryHistory';
-import { reduxReactRouter, match } from 'redux-router/server';
+import { RouterContext, createMemoryHistory, match } from 'react-router';
+import { syncHistoryWithStore } from 'react-router-redux';
 import reducer from '../universal/reducers';
 import routes from '../universal/routes';
 
@@ -28,28 +28,33 @@ for ( let dir of STATIC_DIRS ) {
 // Catch-all route handler to render the client app.
 app.use(( req, res ) => {
 
-  const initialState = {};
-  const store = reduxReactRouter({
-    createHistory,
-    routes,
-  })(createStore)(reducer, initialState);
+  const initialState = Immutable.Map();
+  const store = createStore(reducer, initialState);
+  const history = syncHistoryWithStore(createMemoryHistory(), store, {
+    selectLocationState: ( state ) => state.get('router'),
+  });
 
-  store.dispatch(match(req.url, ( err, redirectLocation, routerState ) => {
+  match({
+    location: req.url,
+    history,
+    routes,
+  }, ( err, redirectLocation, renderProps ) => {
 
     if ( err ) {
       return res.status(500).end();
     }
 
-    if ( !routerState ) {
+    if ( !renderProps ) {
       return res.status(404).end();
     }
 
     const Component = (
       <Provider store={store}>
-        <ReduxRouter />
+        <RouterContext {...renderProps} />
       </Provider>
     );
     const componentMarkup = renderToString(Component);
+
     const state = store.getState();
     const markup = `
       <!doctype html>
@@ -70,7 +75,7 @@ app.use(( req, res ) => {
     `;
 
     res.status(200).send(markup);
-  }));
+  });
 });
 
 // Start the web server.
