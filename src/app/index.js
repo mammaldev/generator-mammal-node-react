@@ -37,6 +37,12 @@ export default class MammalReact extends generators.Base {
         message: 'Initialize an empty git repository after scaffolding?',
         default: true,
       },
+      {
+        type: 'input',
+        name: 'gitRemote',
+        message: 'The URL for the git "origin" remote (leave blank for none)',
+        when: ( res ) => res.gitInit,
+      }
     ], ( res ) => {
 
       this.config = Object.assign({}, this.config, res);
@@ -93,8 +99,18 @@ export default class MammalReact extends generators.Base {
     // Initialize an empty git repository. Making the first commit is left up to
     // the user to provide a chance to edit the default setup.
     if ( this.config.gitInit ) {
-      this.spawnCommand('git', [
+      this.spawnCommandSync('git', [
         'init',
+      ]);
+    }
+
+    // Set the git "origin" remote.
+    if ( this.config.gitRemote ) {
+      this.spawnCommand('git', [
+        'remote',
+        'add',
+        'origin',
+        this.config.gitRemote,
       ]);
     }
   }
