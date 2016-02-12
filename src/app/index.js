@@ -73,7 +73,9 @@ export default class MammalReact extends generators.Base {
       [ '_readme.md', 'README.md' ],
     ];
 
-    // Write files.
+    // Write files. The "src/" directory is copied as-is. It can contain
+    // dotfiles which are meant to end up in the scaffolded app so we need to
+    // set the "dot" glob option or they are ignored.
     for ( let [ source, dest ] of filesToCopy ) {
       this.fs.copy(this.templatePath(source), this.destinationPath(dest), {
         globOptions: {
