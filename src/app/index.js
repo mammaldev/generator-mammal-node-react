@@ -27,6 +27,12 @@ export default class MammalReact extends generators.Base {
       },
       {
         type: 'confirm',
+        name: 'npmInstall',
+        message: 'Run npm install after scaffolding (may take a few minutes)?',
+        default: true,
+      },
+      {
+        type: 'confirm',
         name: 'gitInit',
         message: 'Initialize an empty git repository after scaffolding?',
         default: true,
@@ -80,7 +86,9 @@ export default class MammalReact extends generators.Base {
   install() {
 
     // Install all dependencies from npm.
-    this.npmInstall();
+    if ( this.config.npmInstall ) {
+      this.npmInstall();
+    }
 
     // Initialize an empty git repository. Making the first commit is left up to
     // the user to provide a chance to edit the default setup.
