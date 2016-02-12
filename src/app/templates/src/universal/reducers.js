@@ -3,10 +3,12 @@ import { combineReducers } from 'redux-immutable';
 import Immutable from 'immutable';
 
 // Import specific reducers.
+import { homePageReducer } from './pages/home/reducers';
 
 // Export a single combined reducer.
 export default combineReducers({
   router: routerReducer,
+  home: homePageReducer,
 });
 
 //

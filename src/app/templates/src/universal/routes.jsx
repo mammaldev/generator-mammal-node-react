@@ -3,7 +3,10 @@ import { Route } from 'react-router';
 
 // Import route components.
 import App from './components/app';
+import Home from './pages/home/templates';
 
 export default (
-  <Route path="/" component={App}></Route>
+  <Route component={App}>
+    <Route path="/" component={Home} />
+  </Route>
 );
