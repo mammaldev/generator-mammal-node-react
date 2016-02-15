@@ -74,7 +74,8 @@ export default class MammalReact extends generators.Base {
       [ '_readme.md', 'README.md' ],
     ];
 
-    // List of extra directories to create.
+    // List of extra empty directories to create. If the directory already
+    // exists it will not be modified.
     const directoriesToCreate = [
       'resources',
     ];
@@ -97,7 +98,9 @@ export default class MammalReact extends generators.Base {
     }
 
     for ( let name of directoriesToCreate ) {
-      fs.mkdirSync(name);
+      try {
+        fs.mkdirSync(name);
+      } catch ( e ) {}
     }
   }
 
