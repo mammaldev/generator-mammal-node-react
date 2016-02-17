@@ -11,6 +11,9 @@
     "helmet": "^1.1.0",
     "immutable": "^3.7.6",
     "isomorphic-fetch": "^2.2.1",
+    <% if ( useKudu ) { %>"kudu": "^1.0.0-alpha.13",<%_ } _%>
+
+    <% if ( kuduAdapter === 'couchdb' ) { %>"kudu-adapter-couch": "^0.5.2",<% } %>
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
     "react-redux": "^4.4.0",

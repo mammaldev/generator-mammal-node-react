@@ -28,6 +28,35 @@ export default class MammalReact extends generators.Base {
       },
       {
         type: 'confirm',
+        name: 'useKudu',
+        message: 'Use Kudu to provide a generic REST API on the server?',
+        default: true,
+      },
+      {
+        type: 'input',
+        name: 'apiBaseURL',
+        message: 'A path with which generic API routes should be prefixed',
+        default: '/api',
+        when: ( res ) => res.useKudu,
+      },
+      {
+        type: 'list',
+        name: 'kuduAdapter',
+        message: 'Which persistence adapter for Kudu would you like to use?',
+        choices: [
+          {
+            name: 'Memory (not recommended for production use)',
+            value: 'memory',
+          },
+          {
+            name: 'CouchDB',
+            value: 'couchdb',
+          },
+        ],
+        when: ( res ) => res.useKudu,
+      },
+      {
+        type: 'confirm',
         name: 'npmInstall',
         message: 'Run npm install after scaffolding (may take a few minutes)?',
         default: true,
@@ -65,13 +94,25 @@ export default class MammalReact extends generators.Base {
       [ 'src/**/*', 'src' ],
     ];
 
+    if ( this.config.kuduAdapter === 'couchdb' ) {
+      filesToCopy.push(
+        [ 'kudu/model-base.js', 'src/server/models/base.js' ],
+        [ 'kudu/models.js', 'src/server/models.js' ]
+      );
+    }
+
     // Map of files in ./templates that need to be processed via fs.copyTpl
-    // before being written to their destination.
+    // before being written to their destination. Files within "src/" that have
+    // been copied previously will be overwritten with the templated version.
+    // The overhead of this should be insignificant enough that it's not worth
+    // maintaining a big glob pattern that lists files from "src/" to exclude
+    // from the copy.
     const filesToTemplate = [
       [ '_package.json', 'package.json' ],
       [ '_env.example', '.env.example' ],
       [ '_env.example', '.env' ],
       [ '_readme.md', 'README.md' ],
+      [ 'src/server/server.jsx', 'src/server/server.jsx' ],
     ];
 
     // List of extra empty directories to create. If the directory already

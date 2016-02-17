@@ -2,6 +2,12 @@ import path from 'path';
 import helmet from 'helmet';
 import express from 'express';
 import Immutable from 'immutable';
+<%_ if ( useKudu ) { _%>
+import Kudu from 'kudu';
+<%_ } _%>
+<%_ if ( kuduAdapter === 'couchdb' ) { _%>
+import CouchAdapter from 'kudu-adapter-couch';
+<%_ } _%>
 import React from 'react';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -10,12 +16,18 @@ import { RouterContext, createMemoryHistory, match } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import reducer from '../universal/reducers';
 import routes from '../universal/routes';
+<%_ if ( useKudu ) { _%>
+import models from './models';
+<%_ } _%>
 
 // Configure directories.
 const STATIC_DIRS = [
   path.join(__dirname, '..', '..', 'dist'),
   path.join(__dirname, '..', '..', 'resources'),
 ];
+<%_ if ( useKudu ) { _%>
+const MODELS_DIR = path.join(__dirname, 'models');
+<%_ } _%>
 
 // Configure Express.
 const app = express();
@@ -24,6 +36,33 @@ app.use(helmet());
 for ( let dir of STATIC_DIRS ) {
   app.use(express.static(dir));
 }
+
+<%_ if ( useKudu ) { _%>
+// Configure Kudu.
+<%_ if ( kuduAdapter === 'couchdb' ) { _%>
+const kuduConfig = {
+  adapter: {
+    type: CouchAdapter,
+    config: {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      path: process.env.DB_PATH,
+    },
+  },
+  <%_ if ( apiBaseURL ) { _%>
+  router: {
+    baseURL: '<%= apiBaseURL %>',
+  },
+  <%_ } _%>
+};
+<%_ } _%>
+const kudu = new Kudu(app<%_ if ( kuduAdapter === 'couchdb' ) { _%>, kuduConfig<%_ } _%>);
+kudu.createGenericRoutes();
+
+for ( let modelFactory of models ) {
+  modelFactory(kudu);
+}
+<%_ } _%>
 
 // Catch-all route handler to render the client app.
 app.use(( req, res ) => {

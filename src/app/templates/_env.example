@@ -1,1 +1,6 @@
 export PORT=<%= appServerPort %>
+<%_ if ( kuduAdapter === 'couchdb' ) { _%>
+export DB_HOST=localhost
+export DB_PORT=5984
+export DB_PATH=/<%= appName %>
+<%_ } _%>
